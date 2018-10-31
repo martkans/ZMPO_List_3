@@ -6,17 +6,23 @@
 
 /*CMenuCommand*/
 
-CMenuCommand::CMenuCommand(string name, string command, CCommand *command_object) {
+CMenuCommand::CMenuCommand(string name, string command, string help_message, CCommand *command_object) {
     this->name = name;
     this->command = command;
+    this->help_message = help_message;
+    this->path = command;
     this->level = 0;
+    this->main_menu = this;
     this->command_object = command_object;
 }
 
-CMenuCommand::CMenuCommand(string name, string command) {
+CMenuCommand::CMenuCommand(string name, string command, string help_message) {
     this->name = name;
     this->command = command;
+    this->help_message = help_message;
+    this->path = command;
     this->level = 0;
+    this->main_menu = this;
     this->command_object = NULL;
 }
 
@@ -33,8 +39,10 @@ void CMenuCommand::run() {
     }
 }
 
-void CMenuCommand::setLevel(int level) {
+void CMenuCommand::prepareMenu(int level, string path, CMenuItem* main_menu) {
     this->level = level;
+    this->path = path + " -> " + this->command;
+    this->main_menu = main_menu;
 }
 
 int CMenuCommand::getMaxLevel(int max) {
@@ -48,13 +56,27 @@ void CMenuCommand::buildLevel(string **tree_menu) {
     *(tree_menu[level]) += command + " ";
 }
 
+string CMenuCommand::getHelp() {
+    return help_message;
+}
+
+
+string CMenuCommand::searchCommand(string command) {
+    if(command == this->command){
+        return path + "\n";
+    }
+    return "";
+}
+
 
 /*CMenu*/
 
 CMenu::CMenu(string name, string command) {
     this->name = name;
     this->command = command;
+    this->path = command;
     this->level = 0;
+    this->main_menu = this;
     error = new bool();
 }
 
@@ -99,18 +121,65 @@ void CMenu::run() {
         getline(cin, input);
 
         if(input != BACK_STRING){
-            pos = getPositionOfCMenuItem(input, error);
-
-            if(!*error){
-                menu_items.at(pos)->run();
+            if(isHelp(input)) {
+                pos = getPositionOfCMenuItem(input, error);
+                if (!*error) {
+                    cout << menu_items.at(pos)->getHelp() << "\n";
+                }
+            } else if (isSearch(input)) {
+                string search_result = main_menu->searchCommand(input);
+                if(search_result == ""){
+                    *error = true;
+                } else {
+                    *error = false;
+                    cout << search_result;
+                }
             } else {
+                pos = getPositionOfCMenuItem(input, error);
+                if(!*error){
+                    menu_items.at(pos)->run();
+                }
+            }
+            if(*error){
                 alert(BAD_VALUE_ALERT_MESSAGE);
             }
         } else {
-            cout << "\ncofnij\n\n";
+            cout << "\ncofnij\n";
         }
 
     }while (input != BACK_STRING);
+}
+
+bool CMenu::isHelp(string &input){
+    if (input.compare(0,5,"help ") == 0){
+        input = input.substr(5, input.length());
+        return true;
+    }
+    return false;
+}
+
+string CMenu::getHelp() {
+    return HELP_ALERT_MESSAGE;
+}
+
+bool CMenu::isSearch(string &input) {
+    if (input.compare(0,7,"search ") == 0){
+        input = input.substr(7, input.length());
+        return true;
+    }
+    return false;
+}
+
+string CMenu::searchCommand(string command) {
+    string path;
+    if(command == this->command){
+        path = this->path + "\n";
+    }
+
+    for (int i = 0; i < menu_items.size(); ++i) {
+        path += menu_items.at(i)->searchCommand(command);
+    }
+    return path;
 }
 
 int CMenu::getMaxLevel(int max) {
@@ -125,10 +194,12 @@ int CMenu::getMaxLevel(int max) {
     return max;
 }
 
-void CMenu::setLevel(int level) {
+void CMenu::prepareMenu(int level, string path, CMenuItem* main_menu) {
     this->level = level;
+    this->path = path + " -> " + this->command;
+    this->main_menu = main_menu;
     for (unsigned int i = 0; i < menu_items.size(); ++i) {
-        menu_items.at(i)->setLevel(level+1);
+        menu_items.at(i)->prepareMenu(level+1, this->path, main_menu);
     }
 }
 
@@ -140,7 +211,7 @@ void CMenu::buildLevel(string **tree_menu) {
 }
 
 void CMenu::showMenu() {
-    cout    << "\n\n" << this->name << " (" << this->command << ")\n"
+    cout    << "\n" << this->name << " (" << this->command << ")\n"
             << "------------------------\n";
 
     if(!menu_items.empty()){
@@ -170,3 +241,5 @@ unsigned long CMenu::getPositionOfCMenuItem(string command, bool* error) {
     *error = true;
     return 0;
 }
+
+

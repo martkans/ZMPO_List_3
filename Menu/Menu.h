@@ -2,7 +2,8 @@
 // Created by martkans on 29.10.18.
 //
 #define BACK_STRING                 "back"
-#define BAD_VALUE_ALERT_MESSAGE     "Podano błędną wartość.\n"
+#define BAD_VALUE_ALERT_MESSAGE     "Podano błędną wartość."
+#define HELP_ALERT_MESSAGE          "Wybrana pozycja nie jest komendą."
 
 #include <iostream>
 #include <vector>
@@ -21,13 +22,19 @@ public:
 protected:
     string name;
     string command;
+    string path;
     int level;
+
+    CMenuItem* main_menu;
 
     virtual void run() = 0;
 
     virtual int getMaxLevel(int max) = 0;
-    virtual void setLevel(int level) = 0;
+    virtual void prepareMenu(int level, string path, CMenuItem* main_menu) = 0;
     virtual void buildLevel(string** tree_menu) = 0;
+
+    virtual string searchCommand(string command) = 0;
+    virtual string getHelp() = 0;
 };
 
 
@@ -47,7 +54,7 @@ public:
     bool deleteCMenuItem(string command_of_object_to_delete);
 
     int getMaxLevel(int max);
-    void setLevel(int level);
+    void prepareMenu(int level, string path, CMenuItem* main_menu);
     void buildLevel(string** tree_menu);
 
 private:
@@ -57,6 +64,12 @@ private:
     void showMenu();
     bool checkIfUnique(string new_name, string new_command);
     unsigned long getPositionOfCMenuItem(string command, bool* error);
+
+    bool isHelp(string &input);
+    string getHelp();
+
+    bool isSearch(string &input);
+    string searchCommand(string command);
 };
 
 #endif //LISTA3_CMENU_H
@@ -68,19 +81,21 @@ private:
 
 class CMenuCommand : public CMenuItem{
 public:
-    CMenuCommand(string name, string command, CCommand* command_object);
-    CMenuCommand(string name, string command);
+    CMenuCommand(string name, string command, string help_message, CCommand* command_object);
+    CMenuCommand(string name, string command, string help_message);
 
     ~CMenuCommand();
     void run();
 
     int getMaxLevel(int max);
-    void setLevel(int level);
+    void prepareMenu(int level, string path, CMenuItem* main_menu);
     void buildLevel(string** tree_menu);
 
 private:
     CCommand* command_object;
-
+    string help_message;
+    string getHelp();
+    string searchCommand(string command);
 };
 
 

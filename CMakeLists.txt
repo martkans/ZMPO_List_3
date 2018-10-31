@@ -24,4 +24,6 @@ add_executable(Lista3
         Table/CTableHandler/CTableHandler.h
         Tools/Tools.cpp
         Tools/Tools.h
+        Menu/CMenuBuilder.cpp
+        Menu/CMenuBuilder.h
         main.cpp)

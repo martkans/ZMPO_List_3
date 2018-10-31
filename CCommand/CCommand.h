@@ -2,7 +2,6 @@
 // Created by martkans on 19.10.18.
 //
 
-#define BAD_VALUE_ALERT_MESSAGE                 "Podano błędną wartość.\n"
 #define NO_OBJECTS_ALERT_MESSAGE                "Nie masz żadnych obiektów! Stwórz je lub zakończ program!\n"
 #define CONFIRMATION_ERROR_ALERT_MESSAGE        "Wprowadź 't' aby potwierdzić lub 'n', aby zaprzeczyć!\n"
 
