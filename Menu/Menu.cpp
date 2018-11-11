@@ -31,6 +31,14 @@ CMenuCommand::~CMenuCommand() {
     cout << "usuwam CMenuCommand: " + command + "\n";
 }
 
+void CMenuCommand::setHelp(string help) {
+    this->help_message = help;
+}
+
+string CMenuCommand::getHelp() {
+    return help_message;
+}
+
 void CMenuCommand::run() {
     if (command_object == NULL){
         cout << "pusta komenda\n";
@@ -56,11 +64,6 @@ void CMenuCommand::buildLevel(string **tree_menu) {
     *(tree_menu[level]) += command + " ";
 }
 
-string CMenuCommand::getHelp() {
-    return help_message;
-}
-
-
 string CMenuCommand::searchCommand(string command) {
     if(command == this->command){
         return path + "\n";
@@ -68,6 +71,9 @@ string CMenuCommand::searchCommand(string command) {
     return "";
 }
 
+string CMenuCommand::saveMenu() {
+    return "[\'" + this->name + "\',\'" + this->command + "\',\'" + this->help_message + "\']";
+}
 
 /*CMenu*/
 
@@ -242,4 +248,14 @@ unsigned long CMenu::getPositionOfCMenuItem(string command, bool* error) {
     return 0;
 }
 
+string CMenu::saveMenu() {
+    string menu = "(\'" + this->name + "\',\'" + this->command + "\';";
+    for (int i = 0; i < this->menu_items.size(); ++i) {
+        if (i != 0){
+            menu += ",";
+        }
+        menu += this->menu_items.at(i)->saveMenu();
+    }
 
+    return menu + ")";
+}

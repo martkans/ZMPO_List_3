@@ -6,12 +6,11 @@
 #define LISTA3_APPLICATIONRUNNER_H
 
 #define TEST_HELP   "test"
-#define ZERO_LEVEL  0
-#define EMPTY_PATH  ""
 
 #include "../Menu/Menu.h"
 #include "../Table/CTableHandler/CTableHandler.h"
 #include "../CCommand/CCommand.h"
+#include "../Menu/CMenuBuilder.h"
 
 void start();
 

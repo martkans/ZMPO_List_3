@@ -17,6 +17,8 @@ using namespace std;
 class CMenuItem {
 public:
     friend class CMenu;
+    friend class CMenuBuilder;
+
     virtual ~CMenuItem(){};
 
 protected:
@@ -35,6 +37,7 @@ protected:
 
     virtual string searchCommand(string command) = 0;
     virtual string getHelp() = 0;
+    virtual string saveMenu() = 0;
 };
 
 
@@ -46,6 +49,7 @@ protected:
 class CMenu : public CMenuItem{
 public:
     CMenu(string name, string command);
+
     ~CMenu();
 
     void run();
@@ -56,6 +60,8 @@ public:
     int getMaxLevel(int max);
     void prepareMenu(int level, string path, CMenuItem* main_menu);
     void buildLevel(string** tree_menu);
+
+    string saveMenu();
 
 private:
     bool* error;
@@ -81,21 +87,28 @@ private:
 
 class CMenuCommand : public CMenuItem{
 public:
+    friend class CMenuBuilder;
+
     CMenuCommand(string name, string command, string help_message, CCommand* command_object);
     CMenuCommand(string name, string command, string help_message);
 
     ~CMenuCommand();
+
     void run();
 
     int getMaxLevel(int max);
     void prepareMenu(int level, string path, CMenuItem* main_menu);
     void buildLevel(string** tree_menu);
 
+    string saveMenu();
+
 private:
     CCommand* command_object;
     string help_message;
-    string getHelp();
     string searchCommand(string command);
+
+    string getHelp();
+    void setHelp(string help);
 };
 
 

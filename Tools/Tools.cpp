@@ -82,3 +82,13 @@ void alert(string message) {
     cout << "\nOperacja zakończona niepowodzeniem!\n"
          << message << "\n";
 }
+
+string convertCharToString(char sign) {
+    string buffer = "";
+    buffer += sign;
+    return buffer;
+}
+
+string removeApostrophes(string processed_string) {
+    return processed_string.substr(1,processed_string.length() - 2);
+}

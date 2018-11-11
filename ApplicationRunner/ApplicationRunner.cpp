@@ -5,7 +5,7 @@
 #include "ApplicationRunner.h"
 
 void start() {
-
+/*
     CTableHandler* table_handler = new CTableHandler();
     CMenuCommand* change_object_name_mc = new CMenuCommand("Zmień nazwę obiektu CTable", "change object name", TEST_HELP, new CCommandChangeObjectName(table_handler));
     CMenuCommand* change_table_size_mc = new CMenuCommand("Zmień rozmiar tablicy obiektu CTable", "change size", TEST_HELP, new CCommandChangeTableSize(table_handler));
@@ -51,8 +51,16 @@ void start() {
 
     main_menu->prepareMenu(ZERO_LEVEL, EMPTY_PATH, main_menu);
     main_menu->run();
+    cout << main_menu->saveMenu();
 
     delete table_handler;
-    delete main_menu;
+    delete main_menu;*/
 
+    CMenu* menu = CMenuBuilder::buildMenuFromString("('mMenu','main';('Subm','sub';['MyComm','Comm','helpCom']),('Subm2','sub2';))");
+    if(menu != NULL){
+        menu->run();
+    }
+    delete menu;
 }
+
+
