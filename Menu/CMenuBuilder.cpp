@@ -58,6 +58,7 @@ CMenu *CMenuBuilder::createCMenuObject(vector<string> menu_info, int &pos_to_int
                     return menu;
                 }
             }
+            pos_to_interpretation++;
         } else {
             error = true;
         }
