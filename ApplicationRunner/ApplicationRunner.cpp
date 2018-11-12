@@ -56,10 +56,11 @@ void start() {
     delete table_handler;
     delete main_menu;*/
 
-    CMenu* menu = CMenuBuilder::buildMenuFromString("('mMenu','main';('Subm','sub';['MyComm','Comm','helpCom']),('Subm2','sub2';))");
+    CMenu* menu = CMenuBuilder::buildMenuFromString("('mMenu','main';('Subm','sub';['MyComm','Comm','helpCom']),('Subm2','sub2';)))");
     if(menu != NULL){
         menu->run();
     }
+
     delete menu;
 }
 

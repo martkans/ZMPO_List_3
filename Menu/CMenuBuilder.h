@@ -33,6 +33,7 @@
 #define NOT_ALLOWED_VALUE_OUTSIDE_APOSTROPHES   "Niedozwolona wartość po za apostrofami: "
 #define EXPECTED_VALUE                          "Oczekiwana wartość: "
 #define UNEXPECTED_VALUE                        "Nieoczekiwana wartość: "
+#define ODD_NUMBER_OF_BRACKETS                  "Sprawdź parzystość nawiasów okrągłych. \n"
 
 #include <string>
 #include <vector>
@@ -51,6 +52,7 @@ class CMenuBuilder {
         static vector <string> processString(string inscription, vector<int> &indexes_vector, bool &error, int &error_index);
         static bool validate(string item, int suggested_role_of_item);
         static bool isSemicolon(string item);
+        static bool checkIfMissRigthBracket(vector <string> menu_info, int &pos_to_interpretation, bool &error);
 };
 
 
