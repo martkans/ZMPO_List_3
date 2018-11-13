@@ -4,8 +4,7 @@
 
 #include "CMenuBuilder.h"
 
-CMenu *CMenuBuilder::buildMenu() {
-    CTableHandler* table_handler = new CTableHandler();
+CMenu *CMenuBuilder::buildCTableMenu(CTableHandler* table_handler) {
     CMenuCommand* change_object_name_mc = new CMenuCommand("Zmień nazwę obiektu CTable", "change object name", "Zmienia nazwę",
             new CCommandChangeObjectName(table_handler));
     CMenuCommand* change_table_size_mc = new CMenuCommand("Zmień rozmiar tablicy obiektu CTable", "change size",
@@ -57,15 +56,13 @@ CMenu *CMenuBuilder::buildMenu() {
     main_menu->addCMenuItem(new CMenuCommand("Wypisz drzewo menu", "tree", "Wypisuje drzewo menu", new CCommandShowTree(main_menu)));
 
     main_menu->prepareMenu(ZERO_LEVEL, EMPTY_PATH, main_menu);
-    main_menu->run();
-    cout << main_menu->saveMenu();
 
-    delete table_handler;
-    delete main_menu;
+    return main_menu;
+
 }
 
 CMenu *CMenuBuilder::buildMenuFromString(string menu) {
-    CMenu* main_menu;
+    CMenu* main_menu = NULL;
     bool error = false;
     int error_index, pos_to_interpretation = 0;
     vector <int> elements_indexes;

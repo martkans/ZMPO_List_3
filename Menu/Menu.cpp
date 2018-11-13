@@ -126,14 +126,16 @@ void CMenu::run() {
         cout << "\nWprowadz komende:\n";
         getline(cin, input);
 
+        input = trim(input);
+
         if(input != BACK_STRING){
             if(compareTo(input, HELP)) {
-                pos = getPositionOfCMenuItem(input, error);
+                pos = getPositionOfCMenuItem(trim(input), error);
                 if (!*error) {
                     cout << menu_items.at(pos)->getHelp() << "\n";
                 }
             } else if (compareTo(input, SEARCH)) {
-                string search_result = main_menu->searchCommand(input);
+                string search_result = main_menu->searchCommand(trim(input));
                 if(search_result == ""){
                     *error = true;
                 } else {

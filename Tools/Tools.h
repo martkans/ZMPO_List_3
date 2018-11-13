@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -32,7 +33,11 @@ bool provideYesOrNo(bool* error);
 
 void alert(string message);
 
+string trim(string processed_string);
 string removeApostrophes(string processed_string);
+
+string loadFromFile(string file_name);
+bool writeToFile(string file_name, string menu_to_save);
 
 
 #endif //LISTA3_TOOLS_H

@@ -11,7 +11,9 @@
 #include "../CCommand/CCommand.h"
 #include "../Menu/CMenuBuilder.h"
 
+
 void start();
-void start(string menu);
+void start(string file_name);
+
 
 #endif //LISTA3_APPLICATIONRUNNER_H

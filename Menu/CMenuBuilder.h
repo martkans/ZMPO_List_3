@@ -44,7 +44,7 @@ using namespace std;
 class CMenuBuilder {
     public:
         static CMenu* buildMenuFromString(string menu);
-        static CMenu* buildMenu();
+        static CMenu* buildCTableMenu(CTableHandler* table_handler);
 
     private:
         static CMenu* createCMenuObject(vector <string> menu_info, int &pos_to_interpretation, bool &error);

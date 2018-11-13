@@ -5,15 +5,25 @@
 #include "ApplicationRunner.h"
 
 void start() {
-    CMenuBuilder::buildMenu();
-}
+    CTableHandler* table_handler = new CTableHandler();
+    CMenu* main_menu = CMenuBuilder::buildCTableMenu(table_handler);
 
-void start(string menu) {
-    CMenu* main_menu = CMenuBuilder::buildMenuFromString(menu);
     if(main_menu != NULL){
         main_menu->run();
+        writeToFile("ala.txt",main_menu->saveMenu());
+        delete main_menu;
     }
-    delete main_menu;
+
+    delete table_handler;
+}
+
+void start(string file_name) {
+    CMenu* main_menu = CMenuBuilder::buildMenuFromString(loadFromFile(file_name));
+    if(main_menu != NULL){
+        main_menu->run();
+        writeToFile("ala.txt", main_menu->saveMenu());
+        delete main_menu;
+    }
 }
 
 
