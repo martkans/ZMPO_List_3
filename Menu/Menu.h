@@ -4,6 +4,8 @@
 #define BACK_STRING                 "back"
 #define BAD_VALUE_ALERT_MESSAGE     "Podano błędną wartość."
 #define HELP_ALERT_MESSAGE          "Wybrana pozycja nie jest komendą."
+#define SEARCH                      "search "
+#define HELP                        "help "
 
 #include <iostream>
 #include <vector>
@@ -57,9 +59,10 @@ public:
     bool addCMenuItem(CMenuItem* item);
     bool deleteCMenuItem(string command_of_object_to_delete);
 
+    void buildLevel(string** tree_menu);
     int getMaxLevel(int max);
     void prepareMenu(int level, string path, CMenuItem* main_menu);
-    void buildLevel(string** tree_menu);
+
 
     string saveMenu();
 
@@ -71,10 +74,9 @@ private:
     bool checkIfUnique(string new_name, string new_command);
     unsigned long getPositionOfCMenuItem(string command, bool* error);
 
-    bool isHelp(string &input);
-    string getHelp();
+    bool compareTo(string &input, string expected_value);
 
-    bool isSearch(string &input);
+    string getHelp();
     string searchCommand(string command);
 };
 
