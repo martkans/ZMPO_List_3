@@ -44,6 +44,7 @@ using namespace std;
 class CMenuBuilder {
     public:
         static CMenu* buildMenuFromString(string menu);
+        static CMenu* buildMenu();
 
     private:
         static CMenu* createCMenuObject(vector <string> menu_info, int &pos_to_interpretation, bool &error);
@@ -53,6 +54,7 @@ class CMenuBuilder {
         static bool validate(string item, int suggested_role_of_item);
         static bool isSemicolon(string item);
         static bool checkIfMissRigthBracket(vector <string> menu_info, int &pos_to_interpretation, bool &error);
+        static void warning(vector<int> elements_indexes, int pos_to_interpretation, string menu);
 };
 
 

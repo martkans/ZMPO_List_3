@@ -5,7 +5,6 @@
 #ifndef LISTA3_APPLICATIONRUNNER_H
 #define LISTA3_APPLICATIONRUNNER_H
 
-#define TEST_HELP   "test"
 
 #include "../Menu/Menu.h"
 #include "../Table/CTableHandler/CTableHandler.h"
@@ -13,5 +12,6 @@
 #include "../Menu/CMenuBuilder.h"
 
 void start();
+void start(string menu);
 
 #endif //LISTA3_APPLICATIONRUNNER_H
