@@ -127,12 +127,12 @@ void CMenu::run() {
         getline(cin, input);
 
         if(input != BACK_STRING){
-            if(isHelp(input)) {
+            if(compareTo(input, HELP)) {
                 pos = getPositionOfCMenuItem(input, error);
                 if (!*error) {
                     cout << menu_items.at(pos)->getHelp() << "\n";
                 }
-            } else if (isSearch(input)) {
+            } else if (compareTo(input, SEARCH)) {
                 string search_result = main_menu->searchCommand(input);
                 if(search_result == ""){
                     *error = true;
@@ -156,9 +156,9 @@ void CMenu::run() {
     }while (input != BACK_STRING);
 }
 
-bool CMenu::isHelp(string &input){
-    if (input.compare(0,5,"help ") == 0){
-        input = input.substr(5, input.length());
+bool CMenu::compareTo(string &input, string expected_value) {
+    if (input.compare(0,expected_value.length(),expected_value) == 0){
+        input = input.substr(expected_value.length(), input.length());
         return true;
     }
     return false;
@@ -166,14 +166,6 @@ bool CMenu::isHelp(string &input){
 
 string CMenu::getHelp() {
     return HELP_ALERT_MESSAGE;
-}
-
-bool CMenu::isSearch(string &input) {
-    if (input.compare(0,7,"search ") == 0){
-        input = input.substr(7, input.length());
-        return true;
-    }
-    return false;
 }
 
 string CMenu::searchCommand(string command) {
