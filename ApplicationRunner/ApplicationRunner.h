@@ -13,7 +13,7 @@
 
 
 void start();
-void start(string file_name);
+void start(string read_file_name);
 
 
 #endif //LISTA3_APPLICATIONRUNNER_H

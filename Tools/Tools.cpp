@@ -90,17 +90,17 @@ string convertCharToString(char sign) {
 }
 
 string trim(string processed_string) {
-    int i = 0;
-    while (i < processed_string.length() && processed_string.at(i) == ' '){
-        i++;
+    int index_counter = 0;
+    while (index_counter < processed_string.length() && processed_string.at(index_counter) == ' '){
+        index_counter++;
     }
-    processed_string = processed_string.substr(i, processed_string.length() - i);
+    processed_string = processed_string.substr(index_counter, processed_string.length() - index_counter);
 
-    i = processed_string.length() - 1;
-    while (i >= 0 && processed_string.at(i) == ' '){
-        i--;
+    index_counter = processed_string.length() - 1;
+    while (index_counter >= 0 && processed_string.at(index_counter) == ' '){
+        index_counter--;
     }
-    processed_string = processed_string.substr(0, i + 1);
+    processed_string = processed_string.substr(0, index_counter + 1);
 
     return processed_string;
 }

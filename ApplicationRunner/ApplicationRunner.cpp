@@ -17,8 +17,8 @@ void start() {
     delete table_handler;
 }
 
-void start(string file_name) {
-    CMenu* main_menu = CMenuBuilder::buildMenuFromString(loadFromFile(file_name));
+void start(string read_file_name) {
+    CMenu* main_menu = CMenuBuilder::buildMenuFromString(loadFromFile(read_file_name));
     if(main_menu != NULL){
         main_menu->run();
         writeToFile("ala.txt", main_menu->saveMenu());

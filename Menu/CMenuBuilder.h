@@ -15,6 +15,7 @@
 
 #define POSITION_MENU_NAME      0
 #define POSITION_MENU_COMMAND   1
+#define POSITION_SEMICOLON      2
 
 #define POSITION_MENU_COMMAND_NAME                  0
 #define POSITION_MENU_COMMAND_COMMAND               1
@@ -47,14 +48,15 @@ class CMenuBuilder {
         static CMenu* buildCTableMenu(CTableHandler* table_handler);
 
     private:
-        static CMenu* createCMenuObject(vector <string> menu_info, int &pos_to_interpretation, bool &error);
-        static CMenuCommand* createCMenuCommandObject(vector <string> menu_info, int &pos_to_interpretation, bool &error);
+        static CMenu* createCMenuObject(string &menu, vector <string> &menu_info, vector <int> &elements_indexes, int &pos_to_interpretation, bool &error);
+        static CMenuCommand* createCMenuCommandObject(string &menu, vector <string> &menu_info, vector <int> &elements_indexes, int &pos_to_interpretation, bool &error);
 
         static vector <string> processString(string inscription, vector<int> &indexes_vector, bool &error, int &error_index);
         static bool validate(string item, int suggested_role_of_item);
         static bool isSemicolon(string item);
-        static bool checkIfMissRigthBracket(vector <string> menu_info, int &pos_to_interpretation, bool &error);
+        static bool checkIfMissRigthBracket(vector <string> &menu_info, int &pos_to_interpretation, bool &error);
         static void warning(vector<int> elements_indexes, int pos_to_interpretation, string menu);
+        static void expectedValueAlert(string expected_value, string &menu, vector <int> &elements_indexes, int &pos_to_interpretation);
 };
 
 
