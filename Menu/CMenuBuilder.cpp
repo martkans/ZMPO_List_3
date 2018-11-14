@@ -64,38 +64,33 @@ CMenu *CMenuBuilder::buildCTableMenu(CTableHandler* table_handler) {
 CMenu *CMenuBuilder::buildMenuFromString(string menu) {
     CMenu* main_menu = NULL;
     bool error = false;
-    int error_index, pos_to_interpretation = 0;
+    int pos_to_interpretation = 0;
     vector <int> elements_indexes;
-    vector <string> menu_info = processString(menu, elements_indexes, error, error_index);
+    vector <string> menu_info = processString(menu, elements_indexes);
 
 
-    if (error){
-        alert(NOT_ALLOWED_VALUE_OUTSIDE_APOSTROPHES + menu.substr(error_index, menu.length() - error_index));
-    } else {
-        if (!menu_info.empty()){
-            if(menu_info.at(pos_to_interpretation) == convertCharToString(LEFT_BRACKET)){
-                main_menu = createCMenuObject(menu, menu_info, elements_indexes, ++pos_to_interpretation, error);
-                if(error){
-                    if(pos_to_interpretation == menu_info.size()){
-                        alert(ODD_NUMBER_OF_BRACKETS + menu + "\n");
-                    }
-
-                    delete main_menu;
-                    return NULL;
+    if (!menu_info.empty()){
+        if(menu_info.at(pos_to_interpretation) == convertCharToString(LEFT_BRACKET)){
+            main_menu = createCMenuObject(menu, menu_info, elements_indexes, ++pos_to_interpretation, error);
+            if(error){
+                if(pos_to_interpretation == menu_info.size()){
+                    alert(ODD_NUMBER_OF_BRACKETS + menu + "\n");
                 }
 
-                if(pos_to_interpretation < menu_info.size()){
-                    warning(elements_indexes, pos_to_interpretation, menu);
-                }
-
-                main_menu->prepareMenu(ZERO_LEVEL, EMPTY_PATH, main_menu);
-            } else {
-                alert(NOT_ALLOWED_VALUE_OUTSIDE_APOSTROPHES +
-                      menu.substr(elements_indexes.at(pos_to_interpretation), menu.length() - elements_indexes.at(pos_to_interpretation)) + "\n"
-                      EXPECTED_VALUE + convertCharToString(LEFT_BRACKET));
+                delete main_menu;
+                return NULL;
             }
+
+            if(pos_to_interpretation < menu_info.size()){
+                warning(elements_indexes, pos_to_interpretation, menu);
+            }
+
+            main_menu->prepareMenu(ZERO_LEVEL, EMPTY_PATH, main_menu);
+        } else {
+            expectedValueAlert(convertCharToString(LEFT_BRACKET), menu, elements_indexes, pos_to_interpretation);
         }
     }
+
     return main_menu;
 }
 
@@ -104,23 +99,41 @@ CMenu *CMenuBuilder::createCMenuObject(string &menu, vector <string> &menu_info,
     int temp_pos = pos_to_interpretation;
 
     if(!error){
-        if(validate(menu_info.at(pos_to_interpretation++), POSITION_MENU_NAME) &&
-           validate(menu_info.at(pos_to_interpretation++), POSITION_MENU_COMMAND) &&
-           isSemicolon(menu_info.at(pos_to_interpretation++))){
+        if(validate(menu_info.at(pos_to_interpretation++)) &&
+           isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA) &&
+           validate(menu_info.at(pos_to_interpretation++)) &&
+           isExpectedSign(menu_info.at(pos_to_interpretation++), SEMICOLON)){
+
+            bool isExpectedFirstChild = true;
 
             sub_menu->name = removeApostrophes(menu_info.at(temp_pos + POSITION_MENU_NAME));
             sub_menu->command = removeApostrophes(menu_info.at(temp_pos + POSITION_MENU_COMMAND));
 
-            while (checkIfMissRigthBracket(menu_info, pos_to_interpretation, error) && menu_info.at(pos_to_interpretation) != convertCharToString(RIGHT_BRACKET) ){
+            while (checkIfIsntMissRigthBracket(menu_info, pos_to_interpretation, error) && menu_info.at(pos_to_interpretation) != convertCharToString(RIGHT_BRACKET) ){
                 if(!error){
-                    if(menu_info.at(pos_to_interpretation) == convertCharToString(LEFT_BRACKET)){
-                        sub_menu->addCMenuItem(createCMenuObject(menu, menu_info, elements_indexes,++pos_to_interpretation, error));
-                    } else if (menu_info.at(pos_to_interpretation) == convertCharToString(LEFT_QUADRATIC_BRACKET)){
-                        sub_menu->addCMenuItem(createCMenuCommandObject(menu, menu_info, elements_indexes,++pos_to_interpretation, error));
+                    if(isExpectedFirstChild || isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA)){
+                        if(menu_info.at(pos_to_interpretation) == convertCharToString(LEFT_BRACKET)){
+                            isExpectedFirstChild = false;
+                            sub_menu->addCMenuItem(createCMenuObject(menu, menu_info, elements_indexes,++pos_to_interpretation, error));
+                        } else if (menu_info.at(pos_to_interpretation) == convertCharToString(LEFT_QUADRATIC_BRACKET)){
+                            isExpectedFirstChild = false;
+                            sub_menu->addCMenuItem(createCMenuCommandObject(menu, menu_info, elements_indexes,++pos_to_interpretation, error));
+                        } else {
+                            if (isExpectedFirstChild){
+                                expectedValueAlert(convertCharToString(LEFT_BRACKET) + " " + convertCharToString(LEFT_QUADRATIC_BRACKET) + " " + convertCharToString(RIGHT_BRACKET),
+                                                   menu, elements_indexes, pos_to_interpretation);
+                            } else {
+                                expectedValueAlert(convertCharToString(LEFT_BRACKET) + "  " + convertCharToString(LEFT_QUADRATIC_BRACKET), menu, elements_indexes, pos_to_interpretation);
+                            }
+
+                            error = true;
+                            return sub_menu;
+                        }
                     } else {
-                        expectedValueAlert(convertCharToString(LEFT_BRACKET) + ", " + convertCharToString(LEFT_QUADRATIC_BRACKET) + " lub " + convertCharToString(RIGHT_BRACKET) + "\n",
-                                menu, elements_indexes, pos_to_interpretation);
                         error = true;
+                        pos_to_interpretation--;
+                        expectedValueAlert(convertCharToString(COMMA) + " " + convertCharToString(RIGHT_BRACKET),
+                                           menu, elements_indexes, pos_to_interpretation);
                         return sub_menu;
                     }
                 } else {
@@ -133,15 +146,15 @@ CMenu *CMenuBuilder::createCMenuObject(string &menu, vector <string> &menu_info,
 
             switch (pos_to_interpretation - temp_pos){
                 case POSITION_MENU_NAME:
-                    expectedValueAlert("<nazwa menu>\n", menu, elements_indexes, pos_to_interpretation);
+                    expectedValueAlert("'<nazwa menu>'", menu, elements_indexes, pos_to_interpretation);
                     break;
                 case POSITION_MENU_COMMAND:
-                    expectedValueAlert("<polecenie menu>\n", menu, elements_indexes, pos_to_interpretation);
+                    expectedValueAlert("'<polecenie menu>'", menu, elements_indexes, pos_to_interpretation);
                     break;
                 case POSITION_SEMICOLON:
-                    expectedValueAlert(convertCharToString(SEMICOLON) + "\n", menu, elements_indexes, pos_to_interpretation);
+                    expectedValueAlert(convertCharToString(SEMICOLON), menu, elements_indexes, pos_to_interpretation);
                 default:
-                    break;
+                    expectedValueAlert(convertCharToString(COMMA), menu, elements_indexes, pos_to_interpretation);
             }
             error = true;
         }
@@ -154,10 +167,12 @@ CMenuCommand *CMenuBuilder::createCMenuCommandObject(string &menu, vector <strin
     CMenuCommand* menu_command = new CMenuCommand(DEFAULT_MENU_COMMAND_NAME, DEFAULT_MENU_COMMAND_COMMAND, DEFAULT_MENU_COMMAND_HELP);
     int temp_pos = pos_to_interpretation;
 
-    if (validate(menu_info.at(pos_to_interpretation++), POSITION_MENU_COMMAND_NAME) &&
-        validate(menu_info.at(pos_to_interpretation++), POSITION_MENU_COMMAND_COMMAND) &&
-        validate(menu_info.at(pos_to_interpretation++), POSITION_MENU_COMMAND_HELP) &&
-        validate(menu_info.at(pos_to_interpretation++), POSITION_MENU_COMMAND_CLOSE_BRACKET)){
+    if (validate(menu_info.at(pos_to_interpretation++)) &&
+        isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA) &&
+        validate(menu_info.at(pos_to_interpretation++)) &&
+        isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA) &&
+        validate(menu_info.at(pos_to_interpretation++)) &&
+        isExpectedSign(menu_info.at(pos_to_interpretation++), RIGHT_QUADRATIC_BRACKET)){
 
         menu_command->name = removeApostrophes(menu_info.at(temp_pos+POSITION_MENU_COMMAND_NAME));
         menu_command->command =removeApostrophes(menu_info.at(temp_pos+POSITION_MENU_COMMAND_COMMAND));
@@ -169,19 +184,19 @@ CMenuCommand *CMenuBuilder::createCMenuCommandObject(string &menu, vector <strin
 
         switch (pos_to_interpretation - temp_pos){
             case POSITION_MENU_COMMAND_NAME:
-                expectedValueAlert("<nazwa komendy>\n", menu, elements_indexes, pos_to_interpretation);
+                expectedValueAlert("'<nazwa komendy>'", menu, elements_indexes, pos_to_interpretation);
                 break;
             case POSITION_MENU_COMMAND_COMMAND:
-                expectedValueAlert("<polecenie komendy>\n", menu, elements_indexes, pos_to_interpretation);
+                expectedValueAlert("'<polecenie komendy>'", menu, elements_indexes, pos_to_interpretation);
                 break;
             case POSITION_MENU_COMMAND_HELP:
-                expectedValueAlert("<pomoc komendy>\n", menu, elements_indexes, pos_to_interpretation);
+                expectedValueAlert("'<pomoc komendy>'", menu, elements_indexes, pos_to_interpretation);
                 break;
             case POSITION_MENU_COMMAND_CLOSE_BRACKET:
-                expectedValueAlert(convertCharToString(RIGHT_QUADRATIC_BRACKET) + "\n", menu, elements_indexes, pos_to_interpretation);
+                expectedValueAlert(convertCharToString(RIGHT_QUADRATIC_BRACKET), menu, elements_indexes, pos_to_interpretation);
                 break;
             default:
-                break;
+                expectedValueAlert(convertCharToString(COMMA), menu, elements_indexes, pos_to_interpretation);
         }
 
         error = true;
@@ -190,17 +205,16 @@ CMenuCommand *CMenuBuilder::createCMenuCommandObject(string &menu, vector <strin
 }
 
 
-vector<string> CMenuBuilder::processString(string inscription, vector<int> &indexes_vector, bool &error, int &error_index) {
-    bool is_between_apostrophes = false;
-    error = false;
+vector<string> CMenuBuilder::processString(string inscription, vector<int> &indexes_vector) {
+    bool is_between_apostrophes = false, is_word_outside_apostrophes = false;
     vector <string> info;
     string buffer;
 
     for (int i = 0; i < inscription.length(); ++i) {
         char sign = inscription.at(i);
 
-        if (is_between_apostrophes){
-            if (sign == APOSTROPHE){
+        if (is_between_apostrophes) {
+            if (sign == APOSTROPHE) {
                 buffer += sign;
                 info.push_back(buffer);
                 buffer = "";
@@ -208,22 +222,37 @@ vector<string> CMenuBuilder::processString(string inscription, vector<int> &inde
             } else {
                 buffer += sign;
             }
-        } else {
+        } else if(is_word_outside_apostrophes) {
             if(sign == LEFT_BRACKET || sign == LEFT_QUADRATIC_BRACKET || sign == RIGHT_BRACKET || sign == RIGHT_QUADRATIC_BRACKET
-               ||  sign == SEMICOLON){
-                buffer = sign;
+               ||  sign == SEMICOLON || sign == COMMA || sign == APOSTROPHE){
                 info.push_back(buffer);
                 buffer = "";
-                indexes_vector.push_back(i);
-            } else if(sign == APOSTROPHE){
+                is_word_outside_apostrophes = false;
+
+                if(sign == APOSTROPHE){
+                    buffer += sign;
+                    is_between_apostrophes = true;
+                } else {
+                    info.push_back(convertCharToString(sign));
+                    indexes_vector.push_back(i);
+                }
+
+            } else {
                 buffer += sign;
-                is_between_apostrophes = true;
-                indexes_vector.push_back(i);
-            } else if(sign != COMMA){
-                error = true;
-                error_index = i;
-                return info;
             }
+        } else {
+            if(sign == LEFT_BRACKET || sign == LEFT_QUADRATIC_BRACKET || sign == RIGHT_BRACKET || sign == RIGHT_QUADRATIC_BRACKET
+               ||  sign == SEMICOLON || sign == COMMA){
+                info.push_back(convertCharToString(sign));
+                buffer = "";
+            } else if(sign == APOSTROPHE){
+                buffer = sign;
+                is_between_apostrophes = true;
+            } else {
+                is_word_outside_apostrophes = true;
+                buffer = sign;
+            }
+            indexes_vector.push_back(i);
         }
     }
 
@@ -231,29 +260,20 @@ vector<string> CMenuBuilder::processString(string inscription, vector<int> &inde
 }
 
 
-bool CMenuBuilder::validate(string item, int suggested_role_of_item) {
-    if(suggested_role_of_item == POSITION_MENU_COMMAND_CLOSE_BRACKET){
-        if (item.size() == 1){
-            if(item.at(0) == RIGHT_QUADRATIC_BRACKET){
-                return true;
-            }
-        }
-    } else {
-        if(item.at(0) == APOSTROPHE && item.at(item.size()-1) == APOSTROPHE){
-            return true;
-        }
+bool CMenuBuilder::validate(string item) {
+    if(item.at(0) == APOSTROPHE && item.at(item.size()-1) == APOSTROPHE){
+        return true;
     }
-
     return false;
 }
 
-bool CMenuBuilder::isSemicolon(string item) {
-    if(item == convertCharToString(SEMICOLON))
+bool CMenuBuilder::isExpectedSign(string item, char expected_sign) {
+    if(item == convertCharToString(expected_sign))
         return true;
     else return false;
 }
 
-bool CMenuBuilder::checkIfMissRigthBracket(vector<string> &menu_info, int &pos_to_interpretation, bool &error) {
+bool CMenuBuilder::checkIfIsntMissRigthBracket(vector<string> &menu_info, int &pos_to_interpretation, bool &error) {
     if(pos_to_interpretation >= menu_info.size()){
         pos_to_interpretation--;
         error = true;
@@ -270,5 +290,5 @@ void CMenuBuilder::warning(vector<int> elements_indexes, int pos_to_interpretati
 void CMenuBuilder::expectedValueAlert(string expected_value, string &menu, vector <int> &elements_indexes, int &pos_to_interpretation) {
     alert(UNEXPECTED_VALUE +
           menu.substr(elements_indexes.at(pos_to_interpretation), menu.length() - elements_indexes.at(pos_to_interpretation)) + "\n");
-    cout << EXPECTED_VALUE << expected_value;
+    cout << EXPECTED_VALUE << expected_value + "\n";
 }

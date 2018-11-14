@@ -14,13 +14,13 @@
 #define APOSTROPHE              '\''
 
 #define POSITION_MENU_NAME      0
-#define POSITION_MENU_COMMAND   1
-#define POSITION_SEMICOLON      2
+#define POSITION_MENU_COMMAND   2
+#define POSITION_SEMICOLON      3
 
 #define POSITION_MENU_COMMAND_NAME                  0
-#define POSITION_MENU_COMMAND_COMMAND               1
-#define POSITION_MENU_COMMAND_HELP                  2
-#define POSITION_MENU_COMMAND_CLOSE_BRACKET         3
+#define POSITION_MENU_COMMAND_COMMAND               2
+#define POSITION_MENU_COMMAND_HELP                  4
+#define POSITION_MENU_COMMAND_CLOSE_BRACKET         5
 
 #define ZERO_LEVEL  0
 #define EMPTY_PATH  ""
@@ -31,7 +31,6 @@
 #define DEFAULT_MENU_COMMAND_COMMAND    "defcommandcomm"
 #define DEFAULT_MENU_COMMAND_HELP       "defhelp"
 
-#define NOT_ALLOWED_VALUE_OUTSIDE_APOSTROPHES   "Niedozwolona wartość po za apostrofami: "
 #define EXPECTED_VALUE                          "Oczekiwana wartość: "
 #define UNEXPECTED_VALUE                        "Nieoczekiwana wartość: "
 #define ODD_NUMBER_OF_BRACKETS                  "Sprawdź parzystość nawiasów okrągłych. \n"
@@ -51,10 +50,10 @@ class CMenuBuilder {
         static CMenu* createCMenuObject(string &menu, vector <string> &menu_info, vector <int> &elements_indexes, int &pos_to_interpretation, bool &error);
         static CMenuCommand* createCMenuCommandObject(string &menu, vector <string> &menu_info, vector <int> &elements_indexes, int &pos_to_interpretation, bool &error);
 
-        static vector <string> processString(string inscription, vector<int> &indexes_vector, bool &error, int &error_index);
-        static bool validate(string item, int suggested_role_of_item);
-        static bool isSemicolon(string item);
-        static bool checkIfMissRigthBracket(vector <string> &menu_info, int &pos_to_interpretation, bool &error);
+        static vector <string> processString(string inscription, vector<int> &indexes_vector);
+        static bool validate(string item);
+        static bool isExpectedSign(string item, char expected_sign);
+        static bool checkIfIsntMissRigthBracket(vector <string> &menu_info, int &pos_to_interpretation, bool &error);
         static void warning(vector<int> elements_indexes, int pos_to_interpretation, string menu);
         static void expectedValueAlert(string expected_value, string &menu, vector <int> &elements_indexes, int &pos_to_interpretation);
 };
