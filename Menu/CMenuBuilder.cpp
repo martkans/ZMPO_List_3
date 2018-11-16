@@ -99,10 +99,10 @@ CMenu *CMenuBuilder::createCMenuObject(string &menu, vector <string> &menu_info,
     int temp_pos = pos_to_interpretation;
 
     if(!error){
-        if(validate(menu_info.at(pos_to_interpretation++)) &&
-           isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA) &&
-           validate(menu_info.at(pos_to_interpretation++)) &&
-           isExpectedSign(menu_info.at(pos_to_interpretation++), SEMICOLON)){
+        if(validate(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation)) &&
+           isExpectedSign(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation), COMMA) &&
+           validate(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation)) &&
+           isExpectedSign(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation), SEMICOLON)){
 
             bool isExpectedFirstChild = true;
 
@@ -111,7 +111,7 @@ CMenu *CMenuBuilder::createCMenuObject(string &menu, vector <string> &menu_info,
 
             while (checkIfIsntMissRigthBracket(menu_info, pos_to_interpretation, error) && menu_info.at(pos_to_interpretation) != convertCharToString(RIGHT_BRACKET) ){
                 if(!error){
-                    if(isExpectedFirstChild || isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA)){
+                    if(isExpectedFirstChild || isExpectedSign(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation), COMMA)){
                         if(menu_info.at(pos_to_interpretation) == convertCharToString(LEFT_BRACKET)){
                             isExpectedFirstChild = false;
                             sub_menu->addCMenuItem(createCMenuObject(menu, menu_info, elements_indexes,++pos_to_interpretation, error));
@@ -153,6 +153,7 @@ CMenu *CMenuBuilder::createCMenuObject(string &menu, vector <string> &menu_info,
                     break;
                 case POSITION_SEMICOLON:
                     expectedValueAlert(convertCharToString(SEMICOLON), menu, elements_indexes, pos_to_interpretation);
+                    break;
                 default:
                     expectedValueAlert(convertCharToString(COMMA), menu, elements_indexes, pos_to_interpretation);
             }
@@ -167,12 +168,12 @@ CMenuCommand *CMenuBuilder::createCMenuCommandObject(string &menu, vector <strin
     CMenuCommand* menu_command = new CMenuCommand(DEFAULT_MENU_COMMAND_NAME, DEFAULT_MENU_COMMAND_COMMAND, DEFAULT_MENU_COMMAND_HELP);
     int temp_pos = pos_to_interpretation;
 
-    if (validate(menu_info.at(pos_to_interpretation++)) &&
-        isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA) &&
-        validate(menu_info.at(pos_to_interpretation++)) &&
-        isExpectedSign(menu_info.at(pos_to_interpretation++), COMMA) &&
-        validate(menu_info.at(pos_to_interpretation++)) &&
-        isExpectedSign(menu_info.at(pos_to_interpretation++), RIGHT_QUADRATIC_BRACKET)){
+    if (validate(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation)) &&
+        isExpectedSign(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation), COMMA) &&
+        validate(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation)) &&
+        isExpectedSign(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation), COMMA) &&
+        validate(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation)) &&
+        isExpectedSign(getNextVectorItemIfExist(menu, menu_info, elements_indexes, pos_to_interpretation), RIGHT_QUADRATIC_BRACKET)){
 
         menu_command->name = removeApostrophes(menu_info.at(temp_pos+POSITION_MENU_COMMAND_NAME));
         menu_command->command =removeApostrophes(menu_info.at(temp_pos+POSITION_MENU_COMMAND_COMMAND));
@@ -261,7 +262,7 @@ vector<string> CMenuBuilder::processString(string inscription, vector<int> &inde
 
 
 bool CMenuBuilder::validate(string item) {
-    if(item.at(0) == APOSTROPHE && item.at(item.size()-1) == APOSTROPHE){
+    if(item.length() > 1 && item.at(0) == APOSTROPHE && item.at(item.size()-1) == APOSTROPHE){
         return true;
     }
     return false;
@@ -291,4 +292,15 @@ void CMenuBuilder::expectedValueAlert(string expected_value, string &menu, vecto
     alert(UNEXPECTED_VALUE +
           menu.substr(elements_indexes.at(pos_to_interpretation), menu.length() - elements_indexes.at(pos_to_interpretation)) + "\n");
     cout << EXPECTED_VALUE << expected_value + "\n";
+}
+
+string CMenuBuilder::getNextVectorItemIfExist(string &menu, vector<string> &menu_info, vector<int> &elements_indexes, int &pos_to_interpretation) {
+    if(pos_to_interpretation < menu_info.size()){
+        return menu_info.at(pos_to_interpretation++);
+    } else {
+        pos_to_interpretation++;
+        elements_indexes.push_back(menu.size());
+        menu_info.push_back("");
+        return "";
+    }
 }

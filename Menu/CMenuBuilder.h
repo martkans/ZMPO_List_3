@@ -56,6 +56,7 @@ class CMenuBuilder {
         static bool checkIfIsntMissRigthBracket(vector <string> &menu_info, int &pos_to_interpretation, bool &error);
         static void warning(vector<int> elements_indexes, int pos_to_interpretation, string menu);
         static void expectedValueAlert(string expected_value, string &menu, vector <int> &elements_indexes, int &pos_to_interpretation);
+        static string getNextVectorItemIfExist(string &menu, vector <string> &menu_info, vector <int> &elements_indexes, int &pos_to_interpretation);
 };
 
 
